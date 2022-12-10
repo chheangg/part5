@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react'
+import './styles/index.css' 
+import Notification from './components/Notification'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   useEffect(() => {
-    const user = window.localStorage.getItem('BlogLoggedinUser')
+    const user = JSON.parse(window.localStorage.getItem('BlogLoggedinUser'))
     if (user) {
-      setUser(JSON.parse(user))
+      setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
@@ -22,6 +29,12 @@ const App = () => {
       setBlogs( blogs )
     )  
   }, [])
+
+  const showNotification = (message, error) => {
+    setMessage(message)
+    setError(error)
+    setTimeout(() => setMessage(null), 5000)
+  }
   
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -36,6 +49,8 @@ const App = () => {
       setPassword('')   
     } catch (exceptions) {
       console.log(exceptions)
+      const error = 'wrong username or password'
+      showNotification(error, true)
     }
   }
   
@@ -44,6 +59,21 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('BlogLoggedinUser')
     blogService.setToken(null)
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    try {
+      const newBlog = await blogService.create({title, author, url})
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setBlogs([...blogs, newBlog])
+      showNotification(`a new blog ${title} by ${author}`, false)
+    } catch (exceptions) {
+      console.log(exceptions)
+      showNotification('Incorrect title, author, or url', true)
+    }
   }
 
   const loginForm = () => {
@@ -63,20 +93,41 @@ const App = () => {
     )
   }
 
-  if (user === null) {
-    return loginForm()
+  const blogForm = () => {
+    return (
+      <div>
+        <form onSubmit={handleLogout}>
+          <p>{user.name} logged in</p>
+          <button type='submit'>logout</button>
+        </form>
+
+        <h2>create new</h2>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor='title'>title:</label>
+          <input id='title' type='text' value={title} onChange={({target}) => setTitle(target.value)}></input>
+          <br></br>
+          <label htmlFor='author'>author:</label>
+          <input id='author' type='text' value={author} onChange={({target}) => setAuthor(target.value)}></input>
+          <br></br>
+          <label htmlFor='url'>url  :</label>
+          <input id='url' type='text' value={url} onChange={({target}) => setUrl(target.value)}></input>
+          <br></br>
+          <button type='submit'>create</button>
+        </form>
+        {blogs.map(blog =>
+          <Blog key={blog.id} blog={blog} />
+        )}
+      </div>
+    )
   }
 
   return (
     <div>
       <h2>blogs</h2>
-      <form onSubmit={handleLogout}>
-        <p>{user.name} logged in</p>
-        <button type='submit'>logout</button>
-      </form>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+      <Notification message={message} error={error} />
+
+      {user === null && loginForm()}
+      {user !== null && blogForm()}
     </div>
   )
 }
