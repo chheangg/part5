@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
-const Blog = ({blog, updateBlog, deleteBlog, showDelete}) => {
+const Blog = ({ blog, updateBlog, deleteBlog, showDelete }) => {
   const [showDetail, setShowDetail] = useState(false)
 
   const blogStyle = {
@@ -17,17 +18,24 @@ const Blog = ({blog, updateBlog, deleteBlog, showDelete}) => {
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        
+
         <button onClick={() => setShowDetail(!showDetail)}>view</button>
       </div>
       <div style={showWhenVisibile}>
         <div>{blog.url}</div>
-        <div>likes {blog.likes} <button onClick={() => updateBlog({...blog, user: blog.user.id, likes: blog.likes + 1})}>Like</button></div>
+        <div>likes {blog.likes} <button onClick={() => updateBlog({ ...blog, user: blog.user.id, likes: blog.likes + 1 })}>Like</button></div>
         <div>{blog.user.name}</div>
-        {showDelete ? <button onClick={() => deleteBlog({...blog})}>remove</button> : null}
+        {showDelete ? <button onClick={() => deleteBlog({ ...blog })}>remove</button> : null}
       </div>
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object,
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  showDelete: PropTypes.bool.isRequired,
 }
 
 

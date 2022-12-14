@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import './styles/index.css' 
+import './styles/index.css'
 import Notification from './components/Notification'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
@@ -27,7 +27,7 @@ const App = () => {
     blogService.getAll().then(blogs => {
       const sortedBlogs = blogs.sort((currentBlog, nextBlog) => currentBlog.likes > nextBlog.likes ? -1 : currentBlog.likes === nextBlog ? 0 : 1)
       setBlogs(sortedBlogs)
-    })  
+    })
   }, [])
 
   const showNotification = (message, error) => {
@@ -35,25 +35,25 @@ const App = () => {
     setError(error)
     setTimeout(() => setMessage(null), 5000)
   }
-  
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password})
+      const user = await loginService.login({ username, password })
 
       // Set token in app and localStorage and clear out form
       window.localStorage.setItem('BlogLoggedinUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
-      setPassword('')   
+      setPassword('')
     } catch (exceptions) {
       console.log(exceptions)
       const error = 'wrong username or password'
       showNotification(error, true)
     }
   }
-  
+
   const handleLogout = (event) => {
     event.preventDefault()
     setUser(null)
@@ -69,10 +69,10 @@ const App = () => {
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
           <label htmlFor='username'>username</label>
-          <input id='username' type='text' value={username} onChange={({target}) => setUsername(target.value)}></input>
+          <input id='username' type='text' value={username} onChange={({ target }) => setUsername(target.value)}></input>
           <br></br>
           <label htmlFor='password'>password</label>
-          <input id='password' type='password' value={password} onChange={({target}) => setPassword(target.value)}></input>
+          <input id='password' type='password' value={password} onChange={({ target }) => setPassword(target.value)}></input>
           <br></br>
           <button type='submit'>login</button>
         </form>
@@ -99,7 +99,7 @@ const App = () => {
 
   const handleBlogUpdate = async (newBlog) => {
     try {
-      const updatedBlog = await blogService.update(newBlog);
+      const updatedBlog = await blogService.update(newBlog)
       const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog)
       setBlogs(updatedBlogs)
     } catch (exceptions) {
