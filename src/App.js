@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './styles/index.css' 
 import Notification from './components/Notification'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(false)
@@ -62,20 +60,7 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    try {
-      const newBlog = await blogService.create({title, author, url})
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setBlogs([...blogs, newBlog])
-      showNotification(`a new blog ${title} by ${author}`, false)
-    } catch (exceptions) {
-      console.log(exceptions)
-      showNotification('Incorrect title, author, or url', true)
-    }
-  }
+  // On Logout
 
   const loginForm = () => {
     return (
@@ -94,6 +79,23 @@ const App = () => {
     )
   }
 
+  // On Login
+
+  const blogFormRef = useRef()
+
+  const handleBlogSubmit = async (newBlog) => {
+    try {
+      const addedBlog = await blogService.create(newBlog)
+      setBlogs([...blogs, addedBlog])
+      showNotification(`a new blog ${addedBlog.title} by ${addedBlog.author}`, false)
+      console.log(blogFormRef)
+      blogFormRef.current.handleVisibility()
+    } catch (exceptions) {
+      console.log(exceptions)
+      showNotification('Incorrect title, author, or url', true)
+    }
+  }
+
   const blogForm = () => {
     return (
       <div>
@@ -103,19 +105,8 @@ const App = () => {
         </form>
 
         <h2>create new</h2>
-        <Togglable buttonText='new blog'>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor='title'>title:</label>
-            <input id='title' type='text' value={title} onChange={({target}) => setTitle(target.value)}></input>
-            <br></br>
-            <label htmlFor='author'>author:</label>
-            <input id='author' type='text' value={author} onChange={({target}) => setAuthor(target.value)}></input>
-            <br></br>
-            <label htmlFor='url'>url  :</label>
-            <input id='url' type='text' value={url} onChange={({target}) => setUrl(target.value)}></input>
-            <br></br>
-            <button type='submit'>create</button>
-          </form>
+        <Togglable buttonText='new blog' ref={blogFormRef}>
+          <BlogForm addBlog={handleBlogSubmit} />
         </Togglable>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
