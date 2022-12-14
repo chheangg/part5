@@ -96,6 +96,17 @@ const App = () => {
     }
   }
 
+  const handleBlogUpdate = async (newBlog) => {
+    try {
+      const updatedBlog = await blogService.update(newBlog);
+      const updateBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog)
+      setBlogs(updateBlogs)
+    } catch (exceptions) {
+      console.log(exceptions)
+      showNotification('An error has occured in the errors', true)
+    }
+  }
+
   const blogForm = () => {
     return (
       <div>
@@ -109,7 +120,7 @@ const App = () => {
           <BlogForm addBlog={handleBlogSubmit} />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} updateBlog={handleBlogUpdate} />
         )}
       </div>
     )
