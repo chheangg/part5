@@ -24,9 +24,10 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((currentBlog, nextBlog) => currentBlog.likes > nextBlog.likes ? -1 : currentBlog.likes === nextBlog ? 0 : 1)
+      setBlogs(sortedBlogs)
+    })  
   }, [])
 
   const showNotification = (message, error) => {
