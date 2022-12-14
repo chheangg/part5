@@ -100,8 +100,21 @@ const App = () => {
   const handleBlogUpdate = async (newBlog) => {
     try {
       const updatedBlog = await blogService.update(newBlog);
-      const updateBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog)
-      setBlogs(updateBlogs)
+      const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog)
+      setBlogs(updatedBlogs)
+    } catch (exceptions) {
+      console.log(exceptions)
+      showNotification('An error has occured in the errors', true)
+    }
+  }
+
+  const handleBlogDelete = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+        const deletedBlog = await blogService.deleteReq(blog.id)
+        const updatedBlogs = blogs.filter(blog => blog.id !== deletedBlog.id)
+        setBlogs(updatedBlogs)
+      }
     } catch (exceptions) {
       console.log(exceptions)
       showNotification('An error has occured in the errors', true)
@@ -121,7 +134,7 @@ const App = () => {
           <BlogForm addBlog={handleBlogSubmit} />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} updateBlog={handleBlogUpdate} />
+          <Blog key={blog.id} blog={blog} updateBlog={handleBlogUpdate} deleteBlog={handleBlogDelete} showDelete={blog.user.username === user.username}/>
         )}
       </div>
     )
