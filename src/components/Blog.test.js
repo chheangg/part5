@@ -82,7 +82,7 @@ describe('<Blog />', () => {
     const deleteBlog = jest.fn()
     const showDelete = true
 
-    const {container} = render(
+    const { container } = render(
       <Blog blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} showDelete={showDelete} />
     )
 
@@ -92,7 +92,7 @@ describe('<Blog />', () => {
     const likes = container.querySelector('.likes')
     expect(likes.textContent).toEqual('likes 0')
 
-    const likeButton = screen.getByRole('button', { name: 'Like'})
+    const likeButton = screen.getByRole('button', { name: 'Like' })
 
     await user.click(likeButton)
     expect(updateBlog.mock.calls).toHaveLength(1)
