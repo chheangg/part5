@@ -60,8 +60,44 @@ describe('<Blog />', () => {
 
     const url = screen.getByText('123')
     const likes = screen.getByText('likes 0')
-    
+
     expect(url).toBeDefined()
     expect(likes).toBeDefined()
+  })
+
+  test('likes button pressed twice', async () => {
+    const blog = {
+      title: 'A Game Of Thrones',
+      author: 'George RR Martin',
+      url: '123',
+      likes: 0,
+      user: {
+        name: 'Chheang',
+        id: 123,
+      }
+    }
+
+    const user = userEvent.setup()
+    const updateBlog = jest.fn()
+    const deleteBlog = jest.fn()
+    const showDelete = true
+
+    const {container} = render(
+      <Blog blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} showDelete={showDelete} />
+    )
+
+    const openButton = screen.getByRole('button', { name: 'view' })
+    await user.click(openButton)
+
+    const likes = container.querySelector('.likes')
+    expect(likes.textContent).toEqual('likes 0')
+
+    const likeButton = screen.getByRole('button', { name: 'Like'})
+
+    await user.click(likeButton)
+    expect(updateBlog.mock.calls).toHaveLength(1)
+
+    await user.click(likeButton)
+    expect(updateBlog.mock.calls).toHaveLength(2)
   })
 })

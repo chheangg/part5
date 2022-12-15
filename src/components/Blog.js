@@ -22,7 +22,10 @@ const Blog = ({ blog, updateBlog, deleteBlog, showDelete }) => {
       </div>
       <div style={showWhenVisibile} className='blog-detail'>
         <div>{blog.url}</div>
-        <div>likes {blog.likes} <button onClick={() => updateBlog({ ...blog, user: blog.user.id, likes: blog.likes + 1 })}>Like</button></div>
+        <div>
+          <div className='likes'>likes {blog.likes}</div> 
+          <button onClick={() => updateBlog({ ...blog, user: blog.user.id, likes: blog.likes + 1 })}>Like</button>
+        </div>
         <div>{blog.user.name}</div>
         {showDelete ? <button onClick={() => deleteBlog({ ...blog })}>remove</button> : null}
       </div>
