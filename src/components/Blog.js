@@ -18,7 +18,6 @@ const Blog = ({ blog, updateBlog, deleteBlog, showDelete }) => {
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-
         <button onClick={() => setShowDetail(!showDetail)}>view</button>
       </div>
       <div style={showWhenVisibile} className='blog-detail'>
