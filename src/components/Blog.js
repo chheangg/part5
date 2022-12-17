@@ -18,13 +18,13 @@ const Blog = ({ blog, updateBlog, deleteBlog, showDelete }) => {
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        <button onClick={() => setShowDetail(!showDetail)}>view</button>
+        <button className='expand-blog' onClick={() => setShowDetail(!showDetail)}>view</button>
       </div>
       <div style={showWhenVisibile} className='blog-detail'>
         <div>{blog.url}</div>
         <div>
           <div className='likes'>likes {blog.likes}</div>
-          <button onClick={() => updateBlog({ ...blog, user: blog.user.id, likes: blog.likes + 1 })}>Like</button>
+          <button className='like-btn' onClick={() => updateBlog({ ...blog, user: blog.user.id, likes: blog.likes + 1 })}>Like</button>
         </div>
         <div>{blog.user.name}</div>
         {showDelete ? <button onClick={() => deleteBlog({ ...blog })}>remove</button> : null}

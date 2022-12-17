@@ -37,7 +37,7 @@ describe('Blog app', function() {
         cy.login({ username: 'chheangg', password: 'password' })
       })
 
-      it('successfully add new notes', function() {
+      it('successfully add new blog', function() {
         cy.contains('new blog').click()
         cy.get('#title').type('a new blog')
         cy.get('#author').type('George RR Martin')
@@ -46,6 +46,18 @@ describe('Blog app', function() {
 
         cy.contains('a new blog')
         cy.contains('George RR Martin')
+      })
+
+      describe('a blog is created', function() {
+        beforeEach(function() {
+          cy.createBlog({ title: 'a new blog', author: 'George RR Martin', url: 'www.justablog.com' })
+        })
+
+        it('successfully likes a blog', function() {
+          cy.get('.expand-blog').click()
+          cy.get('.like-btn').click()
+          cy.contains('a new blog').parent().contains('likes 1')
+        })
       })
     })
   })
