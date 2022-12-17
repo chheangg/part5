@@ -39,7 +39,7 @@ Cypress.Commands.add('login', ({ username, password }) => {
   })
 })
 
-Cypress.Commands.add('getToken', ({ username, password}) => {
+Cypress.Commands.add('getToken', ({ username, password }) => {
   cy.request('POST', 'http://localhost:3003/api/users/login', {
     username, password
   }).then(response => {
@@ -61,4 +61,13 @@ Cypress.Commands.add('createBlog', ({ title, author, url, token }) => {
     }
   })
   cy.visit('http://localhost:3000/')
+})
+
+Cypress.Commands.add('likeBlog', (blogTitle, likes) => {
+  cy.contains(blogTitle).parent().as('blogComponent')
+  cy.get('@blogComponent').find('.expand-blog').click()
+
+  for (let i = likes; i > 0; i--) {
+    setTimeout(() => cy.get('@blogComponent').find('.like-btn').click(), i * 100)
+  }
 })

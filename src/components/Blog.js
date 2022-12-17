@@ -15,7 +15,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, showDelete }) => {
   const showWhenVisibile = { display: showDetail ? '' : 'none' }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button className='expand-blog' onClick={() => setShowDetail(!showDetail)}>view</button>

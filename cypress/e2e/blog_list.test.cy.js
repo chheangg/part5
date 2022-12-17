@@ -83,10 +83,32 @@ describe('Blog app', function() {
           cy.get('html').should('not.contain', 'Chheang submit')
         })
 
-        it.only('fail to find delete button on other\'s blog', function() {
+        it('fail to find delete button on other\'s blog', function() {
           cy.contains('Mark submit').parent().as('markBlog')
           cy.get('@markBlog').find('.expand-blog').click()
           cy.get('@markBlog').should('not.contain', 'remove')
+        })
+      })
+
+      describe('multiple blog', function() {
+        beforeEach(function() {
+          cy.createBlog({ title: 'Blog with second least like', author: 'George RR Martin', url: 'www.justablog.com' })
+          cy.createBlog({ title: 'Blog with least like', author: 'George RR Martin', url: 'www.justablog.com' })
+          cy.createBlog({ title: 'Blog with most like', author: 'George RR Martin', url: 'www.justablog.com' })
+
+          cy.visit('http://localhost:3000/')
+          
+          cy.likeBlog('Blog with least like', 5)
+          cy.likeBlog('Blog with second least like', 7)
+          cy.likeBlog('Blog with most like', 10)
+
+          cy.visit('http://localhost:3000/')
+        })
+
+        it('blogs are ordered correctly', function() {
+          cy.get('.blog').eq(0).contains('Blog with most like')
+          cy.get('.blog').eq(1).contains('Blog with second least like')
+          cy.get('.blog').eq(2).contains('Blog with least like')
         })
       })
     })
