@@ -24,6 +24,12 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+Cypress.Commands.add('createUser', ({ username, name, password }) => {
+  cy.request('POST', 'http://localhost:3003/api/users/register', {
+    username, name, password
+  })
+})
+
 Cypress.Commands.add('login', ({ username, password }) => {
   cy.request('POST', 'http://localhost:3003/api/users/login', {
     username, password
@@ -33,7 +39,15 @@ Cypress.Commands.add('login', ({ username, password }) => {
   })
 })
 
-Cypress.Commands.add('createBlog', ({ title, author, url }) => {
+Cypress.Commands.add('getToken', ({ username, password}) => {
+  cy.request('POST', 'http://localhost:3003/api/users/login', {
+    username, password
+  }).then(response => {
+    return response.body
+  })
+})
+
+Cypress.Commands.add('createBlog', ({ title, author, url, token }) => {
   cy.request({
     method: 'POST',
     url: 'http://localhost:3003/api/blogs',
@@ -43,7 +57,7 @@ Cypress.Commands.add('createBlog', ({ title, author, url }) => {
       url
     },
     headers: {
-      'Authorization': `bearer ${JSON.parse(localStorage.getItem('BlogLoggedinUser')).token}`
+      'Authorization': `bearer ${ token ? token : JSON.parse(localStorage.getItem('BlogLoggedinUser')).token}`
     }
   })
   cy.visit('http://localhost:3000/')

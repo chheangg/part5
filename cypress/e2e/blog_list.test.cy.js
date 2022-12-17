@@ -1,7 +1,7 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3000/api/testing')
-    cy.request('POST', 'http://localhost:3000/api/users/register', {
+    cy.createUser({
       username: 'chheangg',
       name: 'chheang',
       password: 'password'
@@ -57,6 +57,36 @@ describe('Blog app', function() {
           cy.get('.expand-blog').click()
           cy.get('.like-btn').click()
           cy.contains('a new blog').parent().contains('likes 1')
+        })
+      })
+
+      describe('blog deletion', function() {
+        beforeEach(function() {
+          cy.createUser({
+            username: 'Mark',
+            name: 'Mark',
+            password: 'password'
+          })
+
+          cy.getToken({ username: 'Mark', password: 'password' })
+            .then(data => {
+              cy.createBlog({ title: 'Chheang submit', author: 'George RR Martin', url: 'www.justablog.com' })
+              cy.createBlog({ title: 'Mark submit', author: 'George RR Martin', url: 'www.justablog.com', token: data.token })
+            })
+        })
+
+        it('successfully delete own blog', function() {
+          cy.contains('Chheang submit').parent().as('chheangBlog')
+          cy.get('@chheangBlog').find('.expand-blog').click()
+          cy.get('@chheangBlog').find('.remove-btn').click()
+
+          cy.get('html').should('not.contain', 'Chheang submit')
+        })
+
+        it.only('fail to find delete button on other\'s blog', function() {
+          cy.contains('Mark submit').parent().as('markBlog')
+          cy.get('@markBlog').find('.expand-blog').click()
+          cy.get('@markBlog').should('not.contain', 'remove')
         })
       })
     })
